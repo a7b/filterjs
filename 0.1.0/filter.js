@@ -7,10 +7,18 @@
         filter.name = "Filter.JS";
         filter.verson = "0.1.0";
         // UTILS
+        //warns user
+        var warn = function (message, type) {
+            if (console.warn) {
+                console.warn("FilterJS Warning" + type + ": " + message);
+            } else {
+                console.log("FilterJS Warning" + type + ": " + message);
+            }
+        };
         //merges the defualt options with the new options.
         //if overwrites defualt with newInfo, but keeps the options in defualt if it dosen't exist in newInfo
         var merge = function(defualt, newInfo) {
-                var result = {};
+            var result = {};
             for (var attrname in defualt) {
                 result[attrname] = defualt[attrname];
             }
@@ -19,9 +27,7 @@
             }
             return result;
         };
-        var praseObjQuery = function(obj, config) {//changes {"name":"blah", "blah":"name"} to NAME:blah AND BLAH:name. Depends on the config 
-            
-        };
+       
         //get's an object and adds some utils to the wrapper. Sort of like jquery, but a lot fewer functions.
         var getElement = function(selector) {
             var wrapper = document.querySelector(selector);
@@ -50,7 +56,7 @@
                 }
             };
 
-            
+
             //add utility functions
             this.addFunction({
                 //returns or modifies the value of an input or textarea field
@@ -101,7 +107,7 @@
                     if (this.addEventListener) {
                         this.addEventListener(event, handler);
                     }
-                    
+
                     else {
                         this.attachEvent('on' + event, function() {
                             handler.call(this);
@@ -109,71 +115,33 @@
                     }
                 },
                 //hides an element
-                "hide":function() {
+                "hide": function() {
                     this.style.display = 'none';
 
                 },
                 //shows an element
-                "show":function() {
+                "show": function() {
                     this.style.display = 'block';
                 }
 
 
             });
             return wrapper;
-            
+
         };
 
 
         // END of UTILS
+        var defualtOptions = {
 
-        var defualtConfig = {
-            "seperator": ":",
-            "options-wrapper": {
-                "start": "OPTIONS:",//EX: OPTIONS:"QUERY":"STUFF", 
-                
-                "end": "MAIN_SEARCH:"
-            },
-
-            "allow": {
-                "options":{
-                    "and-not": "AND_NOT %Q%",
-                "regex": false,
-                "and": "AND %Q%"
-                },
-                "query":{
-                    "not": '-"%S%"'
-                }
-                
-                //special charcters are %SEARCH% - Search(no query: NO_QUERY), %QUERY% - QUERY(the following is a query: THIS_IS_A_QUERY:QUERY_TEXT)
-                // and %PERCENT% : escaped percent sign
-                
-            }
         };
-
-        filter.searchField = function(element, config) {
-            if (!(this instanceof filter.searchField)) { 
+        filter.search = function(selector, config) {
+            if (!(this instanceof filter.search)) {
                 // the constructor was called without "new". To avoid changing the global scope, return a new filter.searchField.
-                return new filter.searchField(element, config);
-              } 
-            this.element = getElement()
-            this.config = merge(defualtConfig, config);
-            Object.defineProperty(this, "query", { 
-              get: function() { 
-                return this.element.val();       
-              },        
-              set: function(val) { 
-                 praseObjQuery(val);
-                this.element.val(val);        
-              },               
-              configurable: false     
-           }); 
-            this.getSearchObj = function(query) {
-                
-                return query;
-                
-            };
-        };
+                warn("constructor");
+                return new filter.search(selector, config);
+            }
+        }
 
 
         return filter;

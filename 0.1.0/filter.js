@@ -1,20 +1,43 @@
 (function(window) {
-    //I recommend this
     'use strict';
 
-    function define_library() {
+    function define_filter() {
         var filter = {};
         filter.name = "Filter.JS";
         filter.verson = "0.1.0";
         // UTILS
         //warns user
-        var warn = function (message, type) {
+        var warn = function(message, type) {
+            var t;
+            if (type) {
+                t = " " + type + " ";
+            }
+            else {
+                t = " ";
+            }
             if (console.warn) {
-                console.warn("FilterJS Warning" + type + ": " + message);
-            } else {
-                console.log("FilterJS Warning" + type + ": " + message);
+                console.warn("FilterJS" + t + "Warning: " + message);
+            }
+            else {
+                console.log("FilterJS" + t + "Warning: " + message);
             }
         };
+        var error = function(message, type) {
+            var t;
+            if (type) {
+                t = " " + type + " ";
+            }
+            else {
+                t = " ";
+            }
+            var e = new Error(message);
+
+            e.name = "Filter.js" + t + "error";
+            throw e;
+
+
+        };
+
         //merges the defualt options with the new options.
         //if overwrites defualt with newInfo, but keeps the options in defualt if it dosen't exist in newInfo
         var merge = function(defualt, newInfo) {
@@ -27,7 +50,7 @@
             }
             return result;
         };
-       
+
         //get's an object and adds some utils to the wrapper. Sort of like jquery, but a lot fewer functions.
         var getElement = function(selector) {
             var wrapper = document.querySelector(selector);
@@ -129,26 +152,51 @@
             return wrapper;
 
         };
+        //returns false if options do not pass. Else returns final options object
+        var processRequiredSearchOptions = function(options) {
+            var defualtOptions = {
+                "keys": false,
+                "weights": {
+                    "query": 1,
+                    "keys": 1
+                },
+                "parser":filter.parser
+            };
 
-
-        // END of UTILS
-        var defualtOptions = {
-
-        };
-        filter.search = function(selector, config) {
-            if (!(this instanceof filter.search)) {
-                // the constructor was called without "new". To avoid changing the global scope, return a new filter.searchField.
-                warn("constructor");
-                return new filter.search(selector, config);
+            
+            if (options.output && options.input && options.data) {
+                return merge(defualtOptions, options);
+            } else {
+                return false;
             }
-        }
+        };
+        // END of UTILS
+
+        filter.search = function(selector, options) {
+            if (!(this instanceof filter.search)) {
+                // the constructor was called without "new". To avoid changing the global scope, return a new filter.search
+                warn("constructor");
+                return new filter.search(selector, options);
+            }
+            var finalOptions;
+            if (!options) {
+                //assume that selector is in options
+                finalOptions = processRequiredSearchOptions(selector);
+            } else {
+                options.input = selector;
+                finalOptions = processRequiredSearchOptions(options);
+            }
+            var element = getElement(finalOptions.input);
+            console.log(element);
+            
+        };
 
 
         return filter;
     }
     //define globally if it doesn't already exist
-    if (typeof(Library) === 'undefined') {
-        window.filter = define_library();
+    if (typeof(filter) === 'undefined') {
+        window.filter = define_filter();
     }
     else {
         console.log("Library already defined.");

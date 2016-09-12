@@ -15,7 +15,7 @@ limitations under the License.
 */
 (function(window) {
     //I recommend this
-    'use strict';
+    "use strict";
 
     function define_library() {
         var filter = {};
@@ -23,12 +23,26 @@ limitations under the License.
         filter.verson = "0.1.0";
         // UTILS
         //warns user
-        var warn = function (message, type) {
+        var warn = function(message, type) {
             if (console.warn) {
                 console.warn("FilterJS Warning" + type + ": " + message);
-            } else {
+            }
+            else {
                 console.log("FilterJS Warning" + type + ": " + message);
             }
+        };
+        var error = function(message, type) {
+            var e = new Error(message); // e.name is 'Error'
+            
+            if (type) {
+                type = " " + type + " ";
+            }
+            else {
+                var type = " ";
+            }
+            e.name = "FilterJS" + type + "error";
+            throw e;
+            // e.toString() would return 'ParseError: Malformed input'
         };
         //merges the defualt options with the new options.
         //if overwrites defualt with newInfo, but keeps the options in defualt if it dosen't exist in newInfo
@@ -37,12 +51,12 @@ limitations under the License.
             for (var attrname in defualt) {
                 result[attrname] = defualt[attrname];
             }
-            for (var attrname in newInfo) {
+            for (attrname in newInfo) {
                 result[attrname] = newInfo[attrname];
             }
             return result;
         };
-       
+
         //get's an object and adds some utils to the wrapper. Sort of like jquery, but a lot fewer functions.
         var getElement = function(selector) {
             var wrapper = document.querySelector(selector);
@@ -144,19 +158,36 @@ limitations under the License.
             return wrapper;
 
         };
-
-
-        // END of UTILS
-        var defualtOptions = {
-
+        var defualtSearchOptions = {
+            range: {
+                "SEARCH": 1,
+                "OTHER": 1
+            }
         };
-        filter.search = function(selector, config) {
-            if (!(this instanceof filter.search)) {
-                // the constructor was called without "new". To avoid changing the global scope, return a new filter.searchField.
-                warn("constructor");
-                return new filter.search(selector, config);
+
+        function validateSearchOptions(options) {
+            if (options === null) {
+                error("You did not provide an options object to filter.search(selector, options)", "options");
+                return false;
+            }
+            if (options.input !== null && options.output !== null && options.keys !== null) {
+                
+            }
+            else {
+                error("The options object provided did not contain the required fields input, output, and keys. The option input may have been provided as a parameter in new filter.search(inputSelector, options);, or may not have been included in the options object, if the function was called as new filter.search(optionsContaingInput); Refer to the documentation for more information", "options")
             }
         }
+
+        // END of UTILS
+
+        filter.search = function(selector, options) {
+            if (!(this instanceof filter.search)) {
+                // the constructor was called without "new". To avoid changing the global scope, return a new filter.searchField.
+                warn("You did not use the new constructor for filter.search(). Please call it as: var mySearch = new filter.search(selector, options); This error has been automatically fixed by filter.js, but should be fixed in your code for best results. Refer to the documentation for more information", "constructor");
+                return new filter.search(selector, options);
+            }
+
+        };
 
 
         return filter;

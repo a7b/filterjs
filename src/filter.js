@@ -197,6 +197,6 @@ limitations under the License.
         window.filter = define_library();
     }
     else {
-        console.log("Library already defined.");
+        console.log("Filter.js already defined.");
     }
 })(window);

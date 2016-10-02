@@ -193,7 +193,7 @@ limitations under the License.
         return filter;
     }
     //define globally if it doesn't already exist
-    if (typeof(Library) === 'undefined') {
+    if (typeof(filter) === 'undefined') {
         window.filter = define_library();
     }
     else {
